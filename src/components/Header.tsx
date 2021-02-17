@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Popup from "reactjs-popup";
 import { BsPlus } from "react-icons/bs";
+import { toast } from "react-toastify";
 
 const Header = styled.div`
   width: 100%;
-  height: 4rem;
+  height: 8rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -22,15 +23,21 @@ const AddBtn = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: all 1s;
+  :hover {
+    transform: scale(1.2);
+  }
 `;
 
 const FormContainer = styled.div`
-  height: 60vh;
+  height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Form = styled.form`
   padding: 1.5rem;
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -56,20 +63,33 @@ const SubmitBtn = styled.button`
   width: 4rem;
   height: 2rem;
   border-radius: ${(props) => props.theme.borderRadius};
-  background-color: ${(props) => props.theme.bgColor};
-  border: 1px solid ${(props) => props.theme.lightGreyColor};
+  border: none;
+  cursor: pointer;
 `;
 
 export default () => {
-  let toDos: any[];
+  let toDos: toDoObjType[] = [];
   const [title, setTitle] = useState("");
-  const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const onSubmit = async (e: any) => {
     e.preventDefault();
-    setTitle("");
-    setStart("");
-    setEnd("");
+    const loadedToDos = localStorage.getItem("toDos");
+    if (loadedToDos) {
+      toDos = JSON.parse(loadedToDos);
+    }
+    if (title === "") {
+      toast.error("Title is required");
+    } else {
+      const toDoObj: toDoObjType = {
+        title,
+        end,
+      };
+      toDos.push(toDoObj);
+      localStorage.setItem("toDos", JSON.stringify(toDos));
+      setTitle("");
+      setEnd("");
+      window.location.reload();
+    }
   };
   const onChange = (e: any) => {
     const {
@@ -77,8 +97,6 @@ export default () => {
     } = e;
     if (name === "title") {
       setTitle(value);
-    } else if (name === "start") {
-      setStart(value);
     } else {
       setEnd(value);
     }
@@ -103,14 +121,6 @@ export default () => {
                 placeholder="할 일"
                 maxLength={120}
                 name="title"
-              />
-              <Input
-                name="start"
-                value={start}
-                onChange={onChange}
-                type="datetime-local"
-                placeholder="할 일"
-                maxLength={120}
               />
               <Input
                 name="end"

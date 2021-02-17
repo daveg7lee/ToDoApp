@@ -8,7 +8,9 @@ function createWindow() {
     mainWindow = new electron_1.BrowserWindow({
         center: true,
         kiosk: !isDev,
-        resizable: true,
+        resizable: false,
+        maxWidth: 900,
+        maxHeight: 600,
         webPreferences: {
             nodeIntegration: true
         }
