@@ -6,6 +6,7 @@ import Theme from "../Styles/Theme";
 import Header from "./Header";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import notify from "../toDo.utils";
 
 const Wrapper = styled.div`
   margin: 0 auto;
@@ -44,7 +45,18 @@ const ToDoColumn = styled.div`
   align-items: center;
 `;
 
-function App() {
+const End = styled.h1`
+  font-size: 13px;
+  font-weight: 400;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  color: ${(props) => props.theme.darkGreyColor};
+`;
+
+const App = () => {
   let toDos: any;
   const loadedToDos = localStorage.getItem("toDos");
   if (loadedToDos) {
@@ -52,6 +64,19 @@ function App() {
   } else {
     toDos = [];
   }
+  const checkEnd = () => {
+    toDos.map((toDo: toDoObjType) => {
+      let now: Date = new Date();
+      const hour = now.getHours() - 1;
+      const toDoHour = new Date(toDo.end).getHours();
+      if (hour + 1 === toDoHour) {
+        if (!toDo.notified) {
+          notify(toDo.title);
+          toDo.notified = true;
+        }
+      }
+    });
+  };
   const onClick = (e: any) => {
     const container = e.target.parentNode;
     const title = container.innerText;
@@ -75,6 +100,7 @@ function App() {
       window.location.reload();
     }, 500);
   };
+  setInterval(checkEnd, 1000);
   return (
     <ThemeProvider theme={Theme}>
       <GlobalStyles />
@@ -83,12 +109,14 @@ function App() {
         <Body>
           {toDos &&
             toDos.map((toDo: toDoObjType) => (
-              <TodoContainer>
+              <TodoContainer key={toDo.title}>
                 <ToDoColumn>
                   <RadioBtn type="radio" onClick={onClick} />
                   <ToDoTitle>{toDo.title}</ToDoTitle>
                 </ToDoColumn>
-                <ToDoColumn></ToDoColumn>
+                <ToDoColumn>
+                  {toDo.end ? <End>{toDo.end} 까지</End> : <End>기한 없음</End>}
+                </ToDoColumn>
               </TodoContainer>
             ))}
         </Body>
@@ -96,6 +124,6 @@ function App() {
       <ToastContainer hideProgressBar={true} />
     </ThemeProvider>
   );
-}
+};
 
 export default App;

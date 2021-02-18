@@ -83,6 +83,7 @@ export default () => {
       const toDoObj: toDoObjType = {
         title,
         end,
+        notified: false,
       };
       toDos.push(toDoObj);
       localStorage.setItem("toDos", JSON.stringify(toDos));

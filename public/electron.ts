@@ -4,7 +4,7 @@ import * as path from "path";
 
 let mainWindow: BrowserWindow;
 
-function createWindow() {
+const createWindow = () => {
   mainWindow = new BrowserWindow({
     center: true,
     kiosk: !isDev,
@@ -25,7 +25,7 @@ function createWindow() {
   mainWindow.on("closed", () => {
     mainWindow = undefined!;
   });
-}
+};
 
 app.on("ready", createWindow);
 
